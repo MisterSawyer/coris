@@ -3,10 +3,13 @@
 #include <array>
 #include <vector>
 #include <thread>
+#include <atomic>
+#include <stop_token>
 
 namespace coris
 {
     using counter_id = std::size_t;
+    using worker_id = std::size_t;
     using counter_value = int;
 
     class Coris final
@@ -23,7 +26,14 @@ namespace coris
 
             void Wait(counter_id, counter_value);
 
+        protected:
+            bool Init();
+            void Clear();
+
+            void Worker(std::stop_token, worker_id);
+
         private:
+            const std::size_t _numberOfWorkerThreads;
             std::vector<std::jthread> _workerThreads;
     };
 }
