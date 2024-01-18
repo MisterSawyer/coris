@@ -1,14 +1,45 @@
 #pragma once
 #include <coris.h>
+#include <coroutine>
 
 namespace coris
 {
-    class Promise
+    template<class CoroutineType, class ValueType>
+    struct Promise
     {
-        public:
+        CoroutineType get_return_object() 
+        { 
+            return {CoroutineType::from_promise(*this)}; 
+        }
 
-        protected:
+        std::suspend_always initial_suspend() noexcept 
+        {
+            _value = ValueType{};
+            return {}; 
+        }
 
-        private:
+        std::suspend_always final_suspend() noexcept
+        { 
+            return {};
+        }
+
+        std::suspend_always yield_value(ValueType value) noexcept
+        { 
+            _value = std::move(value);
+            return {};
+        }
+
+        void return_value(ValueType value) 
+        {
+            _value = std::move(value);
+        }
+
+        void unhandled_exception() 
+        {
+        }
+
+        constexpr inline const ValueType & Get() const noexcept {return _value;}
+
+        ValueType _value;
     };
 }
