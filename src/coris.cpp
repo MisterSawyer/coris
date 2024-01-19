@@ -8,8 +8,41 @@
 
 namespace coris
 {
+    Coris::Coris()
+    {
+        
+    }
 
-    void Coris::Worker(std::stop_token token, worker_id id)
+    Coris::~Coris()
+    {
+
+    }
+
+    Counter Coris::Run(Job arr[], std::size_t N)
+    {
+        std::puts(std::format("coris run {} jobs", N).c_str());
+        return {};
+    }
+
+    void Coris::Wait(Counter, counter_value_t)
+    {
+
+    }
+
+
+    /*
+    class Counter
+    {
+
+    };
+
+    struct WorkerData
+    {
+        worker_id id;
+    };
+
+
+    void Coris::Worker(std::stop_token token, WorkerData workerData)
     {
         //Init thread
         while(token.stop_requested() == false)
@@ -60,4 +93,5 @@ namespace coris
 
         _workerThreads.clear();
     }
+    */
 }

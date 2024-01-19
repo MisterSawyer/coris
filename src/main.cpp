@@ -1,36 +1,33 @@
 #include <cstdio>
 #include <format>
 #include <chrono>
+
 #include <coris.h>
-#include <coroutine>
 
-#include "promise.h"
-
-struct JobCoroutine : std::coroutine_handle<coris::Promise<JobCoroutine, int>>
+coris::Job SomeJob(int i)
 {
-    using promise_type = coris::Promise<JobCoroutine, int>;
-};
-
-JobCoroutine SomeJob()
-{
-    co_return 9;
+    co_return 9 + i;
 }
 
 int main(int argc, char * argv[])
 {
     std::puts(std::format("argc: {}", argc).c_str());
+    coris::Coris coris;
 
-    auto f = SomeJob();
-    f.resume();
-    std::puts(std::format("f: {}", f.promise().Get()).c_str());
-    f.destroy();
-
-    using namespace std::literals::chrono_literals;
     std::puts("coris stared");
-    
-    
-    coris::Coris coris(4);
-    std::this_thread::sleep_for(2ms);
+
+    std::array<coris::Job, 10> jobs;
+    coris::Counter cnt;
+
+    for(int i=0; i<10; ++i)
+    {
+        jobs[i] = SomeJob(i);
+    }
+
+    cnt = coris.Run(jobs);
+    coris.Wait(cnt, 10);
+
+    coris.Run(SomeJob(3));
 
     std::puts("coris ended");
     return 0;
